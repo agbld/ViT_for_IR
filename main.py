@@ -32,12 +32,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # dataset
     parser.add_argument('--train_path', type=str)
+    parser.add_argument('--zeroshot_train_path', type=str, default=None)
     parser.add_argument('--test_path', type=str)
     # training
     parser.add_argument('--learning_rate', type=float, default=0.003)
     parser.add_argument('--reg_lambda', type=float, default=0.5)
     parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--neg_ratio', type=int, default=2)
     parser.add_argument('--n_epochs', type=int, default=10000)
     parser.add_argument('--batch_size', type=int, default=64)
     # model
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default=str(int(time.time())))
     # environment settings
     parser.add_argument('--num_workers', type=int, default=4)
-    parser.add_argument('--save_epochs', type=int, default=10)
+    parser.add_argument('--save_epochs', type=int, default=5)
     parser.add_argument('--eval_epochs', type=int, default=5)
     parser.add_argument('--use_half', type=bool, default=True)
     parser.add_argument('--cuda', type=bool, default=True)
@@ -112,6 +112,11 @@ if __name__ == '__main__':
     test_dataset = \
         torchvision.datasets.ImageFolder(root=args.test_path, transform=data_transform)
     test_loader = DataLoader(test_dataset, **kwargs)
+
+    if args.zeroshot_train_path is not None:
+        zeroshot_train_dataset = \
+            torchvision.datasets.ImageFolder(root=args.zeroshot_train_path, transform=data_transform)
+        # zeroshot_train_loader = DataLoader(zeroshot_train_dataset, **kwargs)
 
 #%%
 # train, evaluation functions
@@ -300,6 +305,9 @@ if __name__ == '__main__':
             # evaluate in classification task
             cls_2_embed = get_class_embed(model, train_dataset)
             evaluate_classification(model, None, train_loader, train_acc_history, cls_2_embed, desc='Evaluating classification (train)')
+            if args.zeroshot_train_path is not None:
+                print('Evaluating zero-shot classification...')
+                cls_2_embed = get_class_embed(model, zeroshot_train_dataset)
             evaluate_classification(model, None, test_loader, test_acc_history, cls_2_embed, desc='Evaluating classification (test)')
         else: 
             test_loss_history.append(None)

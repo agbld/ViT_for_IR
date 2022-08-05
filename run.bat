@@ -1,1 +1,2 @@
-python main.py --train_path ./data/train_100 --test_path ./data/test_100 --pretrained True --reg_lambda 0.5 --model_name 100cls_PreReg_Nm05
+python main.py --train_path ./data/train_100 --zeroshot_train_path ./data/train_184 --test_path ./data/test_184 --pretrained True --reg_lambda 0.5 --n_epochs 200 --model_name 100cls_184cls_PreReg_Nm05
+python main.py --train_path ./data/train_100 --zeroshot_train_path ./data/train_184 --test_path ./data/test_184 --pretrained True --reg_lambda 0   --n_epochs 200 --model_name 100cls_184cls_Pre_Nm05
